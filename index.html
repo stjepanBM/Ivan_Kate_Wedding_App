@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Katarina & Ivan 💍</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#e8dcc4] text-gray-800 font-serif">
+
+  <!-- Header -->
+  <header class="flex flex-col items-center py-12">
+    <img src="images/Kate_Ivan_Main.jpeg" alt="Couple" class="w-44 h-44 md:w-56 md:h-56 rounded-full object-cover shadow-lg border-4 border-white mb-4">
+    <p class="text-sm text-gray-700 mb-1">11/10/2025</p>
+    <h1 class="text-4xl md:text-5xl font-semibold mb-6 text-gray-800">Katarina & Ivan</h1>
+    <div class="flex gap-4">
+      <button id="uploadBtn" class="bg-gray-700 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-800 transition">
+        📸 Upload Files
+      </button>
+      <button id="noteBtn" class="bg-gray-700 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-800 transition">
+        💌 Send a Note
+      </button>
+    </div>
+  </header>
+
+  <!-- Gallery -->
+  <main class="max-w-6xl mx-auto px-4 mb-20">
+    <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Replace with your actual photos -->
+      <img src="images/IMG_2920.jpeg" class="gallery-img w-full h-96 object-cover rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer" alt="">
+      <img src="images/IMG_3553.jpeg" class="gallery-img w-full h-96 object-cover rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer" alt="">
+      <img src="images/IMG_3552.jpeg" class="gallery-img w-full h-96 object-cover rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer" alt="">
+      <img src="images/IMG_3448.jpeg" class="gallery-img w-full h-96 object-cover rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer" alt="">
+      <img src="images/IMG_3271.jpeg" class="gallery-img w-full h-96 object-cover rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer" alt="">
+      <img src="images/IMG_3278.jpeg" class="gallery-img w-full h-96 object-cover rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer" alt="">
+    </div>
+
+    <!-- Notes Section -->
+    <section id="notesSection" class="mt-16">
+      <h2 class="text-3xl font-semibold text-center text-gray-700 mb-6">Guest Notes</h2>
+      <div id="notes" class="grid gap-4 max-w-3xl mx-auto"></div>
+    </section>
+  </main>
+
+  <!-- Note Modal -->
+  <div id="noteModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-lg w-11/12 max-w-md p-6 relative">
+      <button id="closeModal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">✕</button>
+      <h3 class="text-2xl font-semibold text-gray-700 mb-4 text-center">Write a Note 💌</h3>
+      <textarea id="noteInput" rows="4" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-gray-500" placeholder="Type your message for the couple..."></textarea>
+      <button id="submitNote" class="mt-4 w-full bg-gray-700 text-white py-2 rounded-lg hover:bg-gray-800 transition">Send</button>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="hidden fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+    <button id="closeLightbox" class="absolute top-5 right-6 text-white text-3xl hover:text-gray-300">✕</button>
+
+    <!-- Arrows -->
+    <button id="prevBtn" class="absolute left-5 text-white text-5xl hover:text-gray-400 px-2">‹</button>
+    <button id="nextBtn" class="absolute right-5 text-white text-5xl hover:text-gray-400 px-2">›</button>
+
+    <img id="lightboxImage" src="" class="max-w-[90%] max-h-[90%] rounded-xl shadow-2xl border border-white" alt="Full-size photo">
+  </div>
+
+  <!-- Script -->
+  <script>
+    const uploadBtn = document.getElementById('uploadBtn');
+    const noteBtn = document.getElementById('noteBtn');
+    const noteModal = document.getElementById('noteModal');
+    const closeModal = document.getElementById('closeModal');
+    const submitNote = document.getElementById('submitNote');
+    const noteInput = document.getElementById('noteInput');
+    const notesContainer = document.getElementById('notes');
+    const galleryImages = document.querySelectorAll('.gallery-img');
+
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightboxImage');
+    const closeLightbox = document.getElementById('closeLightbox');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    const GOOGLE_DRIVE_LINK = 'YOUR_GOOGLE_DRIVE_FOLDER_LINK_HERE'; // 👈 replace with your folder link
+
+    // Google Drive redirect
+    uploadBtn.addEventListener('click', () => window.open(GOOGLE_DRIVE_LINK, '_blank'));
+
+    // Note modal controls
+    noteBtn.addEventListener('click', () => noteModal.classList.remove('hidden'));
+    closeModal.addEventListener('click', () => noteModal.classList.add('hidden'));
+    noteModal.addEventListener('click', e => { if (e.target === noteModal) noteModal.classList.add('hidden'); });
+
+    // Save & display notes
+    submitNote.addEventListener('click', () => {
+      const text = noteInput.value.trim();
+      if (!text) return;
+
+      const div = document.createElement('div');
+      div.className = 'p-4 bg-white rounded-lg shadow text-gray-700 text-left';
+      div.textContent = text;
+      notesContainer.prepend(div);
+
+      const savedNotes = JSON.parse(localStorage.getItem('notes') || '[]');
+      savedNotes.push(text);
+      localStorage.setItem('notes', JSON.stringify(savedNotes));
+
+      noteInput.value = '';
+      noteModal.classList.add('hidden');
+    });
+
+    // Load saved notes
+    window.addEventListener('load', () => {
+      const savedNotes = JSON.parse(localStorage.getItem('notes') || '[]');
+      savedNotes.forEach(t => {
+        const div = document.createElement('div');
+        div.className = 'p-4 bg-white rounded-lg shadow text-gray-700 text-left';
+        div.textContent = t;
+        notesContainer.appendChild(div);
+      });
+    });
+
+    // Lightbox logic
+    let currentIndex = 0;
+    const images = Array.from(galleryImages);
+
+    function openLightbox(index) {
+      currentIndex = index;
+      lightboxImage.src = images[currentIndex].src;
+      lightbox.classList.remove('hidden');
+    }
+
+    function showNext() {
+      currentIndex = (currentIndex + 1) % images.length;
+      lightboxImage.src = images[currentIndex].src;
+    }
+
+    function showPrev() {
+      currentIndex = (currentIndex - 1 + images.length) % images.length;
+      lightboxImage.src = images[currentIndex].src;
+    }
+
+    images.forEach((img, index) => {
+      img.addEventListener('click', () => openLightbox(index));
+    });
+
+    closeLightbox.addEventListener('click', () => lightbox.classList.add('hidden'));
+    lightbox.addEventListener('click', e => {
+      if (e.target === lightbox) lightbox.classList.add('hidden');
+    });
+
+    nextBtn.addEventListener('click', showNext);
+    prevBtn.addEventListener('click', showPrev);
+
+    // Keyboard controls
+    window.addEventListener('keydown', (e) => {
+      if (lightbox.classList.contains('hidden')) return;
+      if (e.key === 'ArrowRight') showNext();
+      if (e.key === 'ArrowLeft') showPrev();
+      if (e.key === 'Escape') lightbox.classList.add('hidden');
+    });
+  </script>
+
+</body>
+</html>
