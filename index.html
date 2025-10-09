@@ -5,83 +5,155 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Katarina & Ivan 💍</title>
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Romantic Serif Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Playfair Display', serif;
+    }
+
+    /* Fade-in animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .fade-in {
+      animation: fadeIn 1.5s ease forwards;
+    }
+
+    .fade-in-up {
+      opacity: 0;
+      animation: fadeInUp 1.6s ease forwards;
+    }
+
+    /* Scroll reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1.2s ease, transform 1.2s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Title fade animation */
+    @keyframes gentleFade {
+      0% { opacity: 0; transform: translateY(-15px) scale(0.98); }
+      60% { opacity: 1; transform: translateY(0) scale(1.02); }
+      100% { transform: scale(1); }
+    }
+
+    .title-animate {
+      animation: gentleFade 2s ease forwards;
+    }
+
+    /* Rose gold button theme */
+    .btn-rose {
+      background-color: #b76e79;
+      border: 1px solid #a65e6a;
+      color: #fff;
+      border-radius: 9999px;
+      box-shadow: 0 4px 8px rgba(183, 110, 121, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .btn-rose:hover {
+      background-color: #a65e6a;
+      box-shadow: 0 6px 12px rgba(166, 94, 106, 0.35);
+      transform: translateY(-2px);
+    }
+
+    /* Center buttons lower */
+    .button-group {
+      margin-top: 2.5rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+  </style>
 </head>
-<body class="bg-green-100 text-green-900 font-serif">
- 
+
+<body class="bg-green-100 text-green-900">
 
   <div class="fixed inset-0 z-0">
-      
     <div class="absolute inset-0 bg-cover bg-center" 
-         style="background-image: url('images/Kate_Ivan_Main.jpeg');">
-    </div>
-    
+         style="background-image: url('images/Kate_Ivan_Main.jpeg');"></div>
     <div class="absolute inset-0 bg-emerald-900 opacity-60"></div>
   </div>
 
   <div class="relative z-10 min-h-screen bg-opacity-95">
-  <!-- Header -->
-  <header class="flex flex-col items-center py-12 py-32 text-center">
-    <!-- <img src="images/Kate_Ivan_Main.jpeg" alt="Couple" class="w-44 h-44 md:w-56 md:h-56 rounded-full object-cover shadow-xl border-4 border-white mb-4"> -->
-    <h1 class="text-4xl md:text-5xl font-serif font-bold mb-6 text-stone-300">Katarina & Ivan</h1>
-    <p class="text-m tracking-widest uppercase text-stone-300 mb-2">11/10/2025</p>
-    <!-- <p class="text-lg font-light max-w-2xl mx-auto text-gray-700 leading-relaxed px-4">
-    Podijelite trenutke koje ste uhvatili, osmijehe koje ste zabilježili i uspomene koje su vam ostale u srcu.
-  </p>
-    <p class="text-lg font-light max-w-2xl mx-auto text-gray-700 leading-relaxed px-4">
-     Svaka vaša fotografija dio je naše priče.
-  </p> -->
-    <div class="flex gap-4">
-   <button id="uploadBtn" 
-    class="bg-[#6BA292] text-white px-6 py-2 rounded-lg shadow-md border border-[#5E9485] hover:bg-[#588D7B] hover:shadow-lg transition">
-    📸 Dodaj Slike
-  </button>
-  <button id="noteBtn" 
-    class="bg-[#6BA292] text-white px-6 py-2 rounded-lg shadow-md border border-[#5E9485] hover:bg-[#588D7B] hover:shadow-lg transition">
-    💌 Napiši nam nešto
-  </button>
+    <!-- Header -->
+    <header class="flex flex-col items-center justify-center text-center py-32">
+      <h1 class="text-5xl md:text-6xl font-bold mb-4 text-stone-200 title-animate">
+        Katarina & Ivan
+      </h1>
+      <p class="text-sm tracking-widest uppercase text-stone-300 mb-8 fade-in-up">
+        11/10/2025
+      </p>
+
+      <div class="button-group fade-in-up">
+        <button id="uploadBtn" class="btn-rose px-6 py-2 font-medium">
+          📸 Dodaj Slike
+        </button>
+        <button id="noteBtn" class="btn-rose px-6 py-2 font-medium">
+          💌 Napiši nam nešto
+        </button>
+      </div>
+    </header>
+
+    <!-- Gallery -->
+    <main class="max-w-6xl mx-auto px-4 mb-20">
+      <div id="gallery" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <img src="images/IMG_3501.jpeg" loading="lazy" class="gallery-img reveal w-full h-96 object-cover rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer" alt="">
+        <img src="images/IMG_3570.jpeg" loading="lazy" class="gallery-img reveal w-full h-96 object-cover rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer" alt="">
+        <img src="images/IMG_3115.jpeg" loading="lazy" class="gallery-img reveal w-full h-96 object-cover rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer" alt="">
+        <img src="images/IMG_3134.jpeg" loading="lazy" class="gallery-img reveal w-full h-96 object-cover rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer" alt="">
+        <img src="images/IMG_3102.jpeg" loading="lazy" class="gallery-img reveal w-full h-96 object-cover rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer" alt="">
+        <img src="images/IMG_3086.jpg" loading="lazy" class="gallery-img reveal w-full h-96 object-cover rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer" alt="">
+      </div>
+
+      <!-- Notes Section -->
+      <section id="notesSection" class="mt-16 reveal">
+        <h2 class="text-3xl font-semibold text-center text-stone-200 mb-6">Bilješke</h2>
+        <div id="notes" class="grid gap-4 max-w-3xl mx-auto"></div>
+      </section>
+    </main>
+
+    <!-- Note Modal -->
+    <div id="noteModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+      <div class="bg-white rounded-xl shadow-lg w-11/12 max-w-md p-6 relative fade-in-up">
+        <button id="closeModal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">✕</button>
+        <h3 class="text-2xl font-semibold text-gray-700 mb-4 text-center">Napiši nam nešto 💌</h3>
+        <textarea id="noteInput" rows="4" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-gray-500" placeholder="Type your message for the couple..."></textarea>
+        <button id="submitNote" class="mt-4 w-full btn-rose py-2">Send</button>
+      </div>
     </div>
-  </header>
 
-  <!-- Gallery -->
-  <main class="max-w-6xl mx-auto px-4 mb-20">
-    <div id="gallery" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- Replace with your actual photos -->
-      <img src="images/IMG_3086.jpg" loading="lazy" class="gallery-img w-full h-96 object-cover rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer" alt="">
-      <img src="images/IMG_3102.jpg" loading="lazy" class="gallery-img w-full h-96 object-cover rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer" alt="">
-      <img src="images/IMG_3115.jpg" loading="lazy" class="gallery-img w-full h-96 object-cover rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer" alt="">
-      <img src="images/IMG_3134.jpg" loading="lazy" class="gallery-img w-full h-96 object-cover rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer" alt="">
-      <img src="images/IMG_3501.jpg" loading="lazy" class="gallery-img w-full h-96 object-cover rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer" alt="">
-      <img src="images/IMG_3570.jpg" loading="lazy" class="gallery-img w-full h-96 object-cover rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer" alt="">
-    </div>
-
-    <!-- Notes Section -->
-    <section id="notesSection" class="mt-16">
-      <h2 class="text-3xl font-semibold text-center text-stone-300 mb-6">Bilješke</h2>
-      <div id="notes" class="grid gap-4 max-w-3xl mx-auto"></div>
-    </section>
-  </main>
-
-  <!-- Note Modal -->
-  <div id="noteModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-    <div class="bg-white rounded-xl shadow-lg w-11/12 max-w-md p-6 relative">
-      <button id="closeModal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">✕</button>
-      <h3 class="text-2xl font-semibold text-gray-700 mb-4 text-center">Napiši nam nešto 💌</h3>
-      <textarea id="noteInput" rows="4" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-gray-500" placeholder="Type your message for the couple..."></textarea>
-      <button id="submitNote" class="mt-4 w-full bg-gray-700 text-white py-2 rounded-lg hover:bg-gray-800 transition">Send</button>
+    <!-- Lightbox -->
+    <div id="lightbox" class="hidden fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+      <button id="closeLightbox" class="absolute top-5 right-6 text-white text-3xl hover:text-gray-300">✕</button>
+      <button id="prevBtn" class="absolute left-5 text-white text-5xl hover:text-gray-400 px-2">‹</button>
+      <button id="nextBtn" class="absolute right-5 text-white text-5xl hover:text-gray-400 px-2">›</button>
+      <img id="lightboxImage" src="" class="max-w-[90%] max-h-[90%] rounded-xl shadow-2xl border border-white" alt="Full-size photo">
     </div>
   </div>
 
-  <!-- Lightbox -->
-  <div id="lightbox" class="hidden fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
-    <button id="closeLightbox" class="absolute top-5 right-6 text-white text-3xl hover:text-gray-300">✕</button>
-
-    <!-- Arrows -->
-    <button id="prevBtn" class="absolute left-5 text-white text-5xl hover:text-gray-400 px-2">‹</button>
-    <button id="nextBtn" class="absolute right-5 text-white text-5xl hover:text-gray-400 px-2">›</button>
-
-    <img id="lightboxImage" src="" class="max-w-[90%] max-h-[90%] rounded-xl shadow-2xl border border-white" alt="Full-size photo">
-  </div>
-</div>
   <!-- Script -->
   <script>
     const uploadBtn = document.getElementById('uploadBtn');
@@ -92,47 +164,37 @@
     const noteInput = document.getElementById('noteInput');
     const notesContainer = document.getElementById('notes');
     const galleryImages = document.querySelectorAll('.gallery-img');
-
     const lightbox = document.getElementById('lightbox');
     const lightboxImage = document.getElementById('lightboxImage');
     const closeLightbox = document.getElementById('closeLightbox');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
+    const GOOGLE_DRIVE_LINK = 'https://drive.google.com/drive/folders/1-7zro5U-h5GO1g0aNRz2xhQchzNPxgt-?usp=sharing';
 
-    const GOOGLE_DRIVE_LINK = 'https://drive.google.com/drive/folders/1-7zro5U-h5GO1g0aNRz2xhQchzNPxgt-?usp=sharing'; // 👈 replace with your folder link
-
-    // Google Drive redirect
     uploadBtn.addEventListener('click', () => window.open(GOOGLE_DRIVE_LINK, '_blank'));
-
-    // Note modal controls
     noteBtn.addEventListener('click', () => noteModal.classList.remove('hidden'));
     closeModal.addEventListener('click', () => noteModal.classList.add('hidden'));
     noteModal.addEventListener('click', e => { if (e.target === noteModal) noteModal.classList.add('hidden'); });
 
-    // Save & display notes
     submitNote.addEventListener('click', () => {
       const text = noteInput.value.trim();
       if (!text) return;
-
       const div = document.createElement('div');
-      div.className = 'p-4 bg-white rounded-lg shadow text-gray-700 text-left';
+      div.className = 'p-4 bg-white rounded-lg shadow text-gray-700 text-left reveal visible';
       div.textContent = text;
       notesContainer.prepend(div);
-
       const savedNotes = JSON.parse(localStorage.getItem('notes') || '[]');
       savedNotes.push(text);
       localStorage.setItem('notes', JSON.stringify(savedNotes));
-
       noteInput.value = '';
       noteModal.classList.add('hidden');
     });
 
-    // Load saved notes
     window.addEventListener('load', () => {
       const savedNotes = JSON.parse(localStorage.getItem('notes') || '[]');
       savedNotes.forEach(t => {
         const div = document.createElement('div');
-        div.className = 'p-4 bg-white rounded-lg shadow text-gray-700 text-left';
+        div.className = 'p-4 bg-white rounded-lg shadow text-gray-700 text-left reveal visible';
         div.textContent = t;
         notesContainer.appendChild(div);
       });
@@ -141,43 +203,35 @@
     // Lightbox logic
     let currentIndex = 0;
     const images = Array.from(galleryImages);
-
-    function openLightbox(index) {
-      currentIndex = index;
-      lightboxImage.src = images[currentIndex].src;
-      lightbox.classList.remove('hidden');
-    }
-
-    function showNext() {
-      currentIndex = (currentIndex + 1) % images.length;
-      lightboxImage.src = images[currentIndex].src;
-    }
-
-    function showPrev() {
-      currentIndex = (currentIndex - 1 + images.length) % images.length;
-      lightboxImage.src = images[currentIndex].src;
-    }
-
-    images.forEach((img, index) => {
-      img.addEventListener('click', () => openLightbox(index));
-    });
-
+    function openLightbox(index) { currentIndex = index; lightboxImage.src = images[currentIndex].src; lightbox.classList.remove('hidden'); }
+    function showNext() { currentIndex = (currentIndex + 1) % images.length; lightboxImage.src = images[currentIndex].src; }
+    function showPrev() { currentIndex = (currentIndex - 1 + images.length) % images.length; lightboxImage.src = images[currentIndex].src; }
+    images.forEach((img, index) => img.addEventListener('click', () => openLightbox(index)));
     closeLightbox.addEventListener('click', () => lightbox.classList.add('hidden'));
-    lightbox.addEventListener('click', e => {
-      if (e.target === lightbox) lightbox.classList.add('hidden');
-    });
-
+    lightbox.addEventListener('click', e => { if (e.target === lightbox) lightbox.classList.add('hidden'); });
     nextBtn.addEventListener('click', showNext);
     prevBtn.addEventListener('click', showPrev);
-
-    // Keyboard controls
-    window.addEventListener('keydown', (e) => {
+    window.addEventListener('keydown', e => {
       if (lightbox.classList.contains('hidden')) return;
       if (e.key === 'ArrowRight') showNext();
       if (e.key === 'ArrowLeft') showPrev();
       if (e.key === 'Escape') lightbox.classList.add('hidden');
     });
-  </script>
 
+    // Scroll fade-in with stagger
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.classList.add('visible');
+          }, index * 120); // stagger timing (120ms per image)
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    reveals.forEach(el => observer.observe(el));
+  </script>
 </body>
 </html>
