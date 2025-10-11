@@ -111,9 +111,9 @@
   <!-- FIREBASE SCRIPT -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, updateDoc, increment, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-    // Your web app's Firebase configuration (yours is fine - kept as example)
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyCnFHaeaqrVyr1p_g3Z5uKLar8vY6Wjxgo",
       authDomain: "kateivan.firebaseapp.com",
@@ -126,7 +126,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // DOM elementi
     const uploadBtn = document.getElementById('uploadBtn');
     const noteBtn = document.getElementById('noteBtn');
     const noteModal = document.getElementById('noteModal');
@@ -145,24 +144,35 @@
     closeModal.addEventListener('click', () => noteModal.classList.add('hidden'));
     noteModal.addEventListener('click', e => { if (e.target === noteModal) noteModal.classList.add('hidden'); });
 
-    // Spremanje bilješke
+    // 🔒 Limit ukupnih poruka
+    const notesLimit = 1000;
+
+    // Submit note s limitom
     submitNote.addEventListener('click', async () => {
       const text = noteInput.value.trim();
       const name = guestName.value.trim() || "Anonimno";
       if (!text) return alert("Unesite poruku 💌");
 
       try {
+        // Provjeri broj poruka prije dodavanja
+        const snapshot = await getDocs(collection(db, "notes"));
+        if (snapshot.size >= notesLimit) {
+          return alert("Dostignut je maksimalan broj poruka 💔");
+        }
+
         await addDoc(collection(db, "notes"), {
           name, text, likes: 0, timestamp: serverTimestamp()
         });
-        noteInput.value = ''; guestName.value = '';
+
+        noteInput.value = ''; 
+        guestName.value = '';
         noteModal.classList.add('hidden');
       } catch (err) {
         console.error("Greška:", err);
       }
     });
 
-    // Učitavanje bilješki
+    // Učitavanje bilješki i like button
     const q = query(collection(db, "notes"), orderBy("timestamp", "desc"));
     onSnapshot(q, (snapshot) => {
       notesContainer.innerHTML = '';
@@ -186,8 +196,6 @@
           const noteId = btn.dataset.id;
           const noteRef = doc(db, "notes", noteId);
           await updateDoc(noteRef, { likes: increment(1) });
-
-          // Add pop animation class to the button's heart (entire button will pop)
           btn.classList.add('pop');
           setTimeout(() => btn.classList.remove('pop'), 400);
         });
