@@ -34,7 +34,6 @@
       75% { transform: scale(1.3); }
       100% { transform: scale(1); }
     }
-    /* ISPRAVKA 1: Klasa 'pop' je sada usklađena sa JS-om za animaciju */
     .pop { animation: heartPop 0.4s ease-in-out; } 
 
     /* Fix: make like button transformable and nicely aligned */
@@ -45,7 +44,16 @@
       font-weight: 600;
       transform-origin: center;
       user-select: none;
+      color: #71717a; /* Tailwind gray-600 za nelajkano */
     }
+    .like-btn.liked {
+        color: #ec4899; /* Tailwind pink-500 za lajkano */
+        transition: all 0.2s ease;
+    }
+    .like-btn.liked:hover {
+        color: #d82b79; /* Tamnija nijansa pri hoveru */
+    }
+
     /* Ensure the counter doesn't scale as much as the heart emoji */
     .like-btn span {
       font-weight: 600;
@@ -133,6 +141,7 @@
     const notesContainer = document.getElementById('notes');
     const GOOGLE_DRIVE_LINK = 'https://www.dropbox.com/request/fDsFF9LX0nL083u2Pnz9';
 
+    // Lightbox elementi
     const galleryImages = document.querySelectorAll('.gallery-img');
     const lightbox = document.getElementById('lightbox');
     const lightboxImage = document.getElementById('lightboxImage');
@@ -152,10 +161,9 @@
     const notesLimit = 1000;
 
     // ----------------------------------------------------
-    // 💡 NOVO: Funkcije za upravljanje Local Storage-om (za 1 like po korisniku)
+    // 💡 FUNKCIJE ZA UPRAVLJANJE LAJK/DISLAJK STANJEM (Local Storage)
     // ----------------------------------------------------
 
-    // Dohvaća lajkane ID-ove iz Local Storage-a
     const getLikedNotes = () => {
         const liked = localStorage.getItem('likedNotes');
         try {
@@ -166,8 +174,7 @@
         }
     };
 
-    // Sprema lajkani ID u Local Storage
-    const saveLikedNote = (noteId) => {
+    const addLikedNote = (noteId) => {
         const liked = getLikedNotes();
         if (!liked.includes(noteId)) {
             liked.push(noteId);
@@ -175,7 +182,12 @@
         }
     };
 
-    // Provjerava je li poruka lajkana
+    const removeLikedNote = (noteId) => {
+        let liked = getLikedNotes();
+        liked = liked.filter(id => id !== noteId);
+        localStorage.setItem('likedNotes', JSON.stringify(liked));
+    };
+    
     const isNoteLiked = (noteId) => {
         return getLikedNotes().includes(noteId);
     };
@@ -188,7 +200,6 @@
       if (!text) return alert("Unesite poruku 💌");
 
       try {
-        // Provjeri broj poruka prije dodavanja
         const snapshot = await getDocs(collection(db, "notes"));
         if (snapshot.size >= notesLimit) {
           return alert("Dostignut je maksimalan broj poruka 💔");
@@ -206,18 +217,37 @@
       }
     });
 
+    // ----------------------------------------------------
+    // 💡 LIGHTBOX LOGIKA
+    // ----------------------------------------------------
 
-    // Lightbox logic
     let currentIndex = 0;
     const images = Array.from(galleryImages);
-    function openLightbox(index) { currentIndex = index; lightboxImage.src = images[currentIndex].src; lightbox.classList.remove('hidden'); }
-    function showNext() { currentIndex = (currentIndex + 1) % images.length; lightboxImage.src = images[currentIndex].src; }
-    function showPrev() { currentIndex = (currentIndex - 1 + images.length) % images.length; lightboxImage.src = images[currentIndex].src; }
+
+    function openLightbox(index) { 
+        currentIndex = index; 
+        lightboxImage.src = images[currentIndex].src; 
+        lightbox.classList.remove('hidden'); 
+    }
+
+    function showNext() { 
+        currentIndex = (currentIndex + 1) % images.length; 
+        lightboxImage.src = images[currentIndex].src; 
+    }
+
+    function showPrev() { 
+        currentIndex = (currentIndex - 1 + images.length) % images.length; 
+        lightboxImage.src = images[currentIndex].src; 
+    }
+
     images.forEach((img, index) => img.addEventListener('click', () => openLightbox(index)));
     closeLightbox.addEventListener('click', () => lightbox.classList.add('hidden'));
-    lightbox.addEventListener('click', e => { if (e.target === lightbox) lightbox.classList.add('hidden'); });
+    lightbox.addEventListener('click', e => { 
+        if (e.target === lightbox) lightbox.classList.add('hidden'); 
+    });
     nextBtn.addEventListener('click', showNext);
     prevBtn.addEventListener('click', showPrev);
+
     window.addEventListener('keydown', e => {
       if (lightbox.classList.contains('hidden')) return;
       if (e.key === 'ArrowRight') showNext();
@@ -225,25 +255,15 @@
       if (e.key === 'Escape') lightbox.classList.add('hidden');
     });
 
-    // Scroll fade-in with stagger
-    const reveals = document.querySelectorAll('.reveal');
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach((entry, index) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => {
-            entry.target.classList.add('visible');
-          }, index * 120); // stagger timing (120ms per image)
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1 });
 
-    reveals.forEach(el => observer.observe(el));
+    // ----------------------------------------------------
+    // 💡 PORUKE (NOTES) LOGIKA
+    // ----------------------------------------------------
 
-    // Učitavanje bilješki i like button
+    // Učitavanje bilješki i like/dislike button
     const q = query(collection(db, "notes"), orderBy("timestamp", "desc"));
     onSnapshot(q, snapshot => {
-        const likedNotesIds = getLikedNotes(); // Dohvati jednom sve lajkane ID-ove
+        const likedNotesIds = getLikedNotes(); 
         
        snapshot.docChanges().forEach(change => {
           const noteId = change.doc.id;
@@ -257,15 +277,13 @@
             noteDiv.dataset.id = noteId;
             noteDiv.className = 'p-4 bg-white rounded-lg shadow text-gray-700 text-left';
             
-            // Postavljanje stila gumba ovisno o Local Storage-u
-            const btnClass = liked 
-                ? 'like-btn mt-2 text-gray-400 cursor-default' // Onemogućeno ako je već lajkano
-                : 'like-btn mt-2 text-pink-500 hover:text-pink-600 transition';
+            // Postavljanje stila gumba, klasa 'liked' definira boju (roza/siva)
+            const btnClass = 'like-btn mt-2 ' + (liked ? 'liked' : '');
             
             noteDiv.innerHTML = `
               <p class="text-lg">${note.text}</p>
               <p class="text-sm text-gray-500 mt-1">${note.name}</p>
-              <button class="${btnClass}" ${liked ? 'disabled' : ''}>
+              <button class="${btnClass}">
                 <span class="heart">❤️</span> <span class="count">${note.likes || 0}</span>
               </button>
             `;
@@ -274,45 +292,52 @@
             // Dodaj event listener
             const btn = noteDiv.querySelector('.like-btn');
             
-            // Listener se dodaje samo ako gumb nije disabled (tj. ako nije lajkan)
-            if (!liked) {
-                btn.addEventListener('click', async () => {
-                  
-                  // Dodatna provjera za svaki slučaj
-                  if (isNoteLiked(noteId)) return;
+            btn.addEventListener('click', async () => {
+                const currentlyLiked = isNoteLiked(noteId);
+                
+                // 💡 ISPRAVLJENA LOGIKA: Ako je TRENUTNO lajkano (dislike), šalje se -1.
+                const incrementValue = currentlyLiked ? -1 : 1; 
+                
+                const heart = btn.querySelector('.heart');
+                const count = btn.querySelector('.count');
 
-                  const heart = btn.querySelector('.heart');
-                  const count = btn.querySelector('.count');
-                  
-                  // Lokalni optimistični UI update
-                  count.textContent = parseInt(count.textContent) + 1; 
-                  
-                  // ISPRAVKA 2: Korištenje ispravne klase 'pop' za animaciju
-                  heart.classList.add('pop'); 
-                  setTimeout(() => heart.classList.remove('pop'), 400);
-                  
-                  // 💡 OGRANIČENJE LAJKA: Spremi u Local Storage i onemogući gumb
-                  saveLikedNote(noteId); 
-                  btn.disabled = true;
-                  btn.classList.remove('text-pink-500', 'hover:text-pink-600', 'transition');
-                  btn.classList.add('text-gray-400', 'cursor-default');
+                // 1. UI Update (Optimistično)
+                // Osiguravamo da brojač ne ide u minus na ekranu.
+                if (parseInt(count.textContent) + incrementValue >= 0) {
+                    count.textContent = parseInt(count.textContent) + incrementValue; 
+                }
+                heart.classList.add('pop'); 
+                setTimeout(() => heart.classList.remove('pop'), 400);
 
-                  const noteRef = doc(db, "notes", noteId);
-                  await updateDoc(noteRef, { likes: increment(1) });
-                });
-            }
+                // 2. Local Storage Update i Toggle Klase
+                if (currentlyLiked) {
+                    // Ako je lajkano, ukloni lajk i ukloni 'liked' klasu
+                    removeLikedNote(noteId);
+                    btn.classList.remove('liked');
+                } else {
+                    // Ako nije lajkano, dodaj lajk i dodaj 'liked' klasu
+                    addLikedNote(noteId);
+                    btn.classList.add('liked');
+                }
+
+                // 3. Firebase Update
+                const noteRef = doc(db, "notes", noteId);
+                
+                // Oslanjamo se na Firebase pravila da spriječe negativne lajkove.
+                await updateDoc(noteRef, { likes: increment(incrementValue) });
+            });
           } 
           else if (change.type === "modified" && noteDiv) {
             // Ažuriranje broja lajkova kada Firebase javi promjenu
             const count = noteDiv.querySelector('.count');
             count.textContent = note.likes || 0;
             
-            // Osiguraj da gumb ostane disabled/siv ako je lajkan
+            // Osiguraj da gumb ima ispravnu klasu
             const btn = noteDiv.querySelector('.like-btn');
-            if (isNoteLiked(noteId) && btn && !btn.disabled) {
-                 btn.disabled = true;
-                 btn.classList.remove('text-pink-500', 'hover:text-pink-600', 'transition');
-                 btn.classList.add('text-gray-400', 'cursor-default');
+            if (isNoteLiked(noteId) && !btn.classList.contains('liked')) {
+                 btn.classList.add('liked');
+            } else if (!isNoteLiked(noteId) && btn.classList.contains('liked')) {
+                 btn.classList.remove('liked');
             }
           }
        }); 
